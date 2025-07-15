@@ -1,12 +1,13 @@
 # **E-Commerce Sales and Operation Analysis**
-
+![](Ecommerce.jpg)
 ***
 ## **Project Goal**
 To Provide data-driven and recommendation that optimize sales, Delivery, Customer Experience, and Product Strategy for a fast growing e-commerce company.
 
 ***
-### Total Used
+### Tool Used
 _SQL_
+
 ***
 ## Data Source
 _Kaggle_
@@ -172,7 +173,7 @@ round(avg(order_id),2) AS avg_order
  group by payment_method
  order by total_order desc;
 ```
-
+![](avg.png)
 - Flag customers inactive for 90+ days since last order.
 ```sql
 -- This Query finds customers who haven't placed an order in over 90 days
@@ -188,6 +189,5 @@ round(avg(order_id),2) AS avg_order
  Having day_since_last_order > 90
  ORDER BY day_since_last_order;
 ```
-
 
 
