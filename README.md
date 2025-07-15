@@ -86,6 +86,7 @@ WHERE order_status = 'Delivered'
 GROUP BY month
 ORDER BY total_sales DESC;
 ```
+
 - Delivery delays: Count and average by courier and region.
 ```sql
 -- Avg Delay per Courier
@@ -97,6 +98,7 @@ round(avg(delivery_delay_days),2) AS avg_delay_days
 FROM deliveries d
 GROUP BY d.courier;
 ```
+
 - Percentage of orders with discount codes vs without.
 ``` sql
 -- Compare orders that used discount code vs those that didnt
@@ -114,7 +116,6 @@ GROUP BY Discount_Status;
 ```
 
 - Orders by city and postcode — regional demand analysis
-
 ```sql
 -- is suming our total revenue by city based on delivered orders.
 -- This is helping identify hight-value location for logistics
@@ -130,7 +131,6 @@ order by  total_Orders desc;
 ```
 
 - Cancellation and return rates: % of total orders.
-
 ``` sql
 -- showing the percentage of return and canclled under
 -- cancelled and return order are in 0.097 and 0.079 respectively which is relatively low and thats what we want on our platform.
@@ -143,7 +143,7 @@ round(sum(Case when order_status = 'Cancelled' THEN 1 ELSE 0 END)/ count(order_i
 FROM orders;
 ```
 
-
+- Identify the most returned products and common reasons.
 ``` sql
 -- this is breaking down the product that is been returned the most and the total amount we had to refund
 -- its gives insight on why our customers are returning our product.
@@ -158,3 +158,36 @@ JOIN products p ON p.product_id = oi.product_id
 GROUP BY p.name,r.return_reason
 order by total_refund desc;
 ```
+
+-- Compare average order value by payment method.
+``` sql
+-- calculating the avg, total orders for each payment method
+-- it helps compare transaction size in each of this payment method
+SELECT 
+payment_method,
+count(order_id) as total_order,
+round(avg(order_id),2) AS avg_order
+ FROM orders
+ WHERE order_status = 'Delivered'
+ group by payment_method
+ order by total_order desc;
+```
+
+- Flag customers inactive for 90+ days since last order.
+```sql
+-- This Query finds customers who haven't placed an order in over 90 days
+-- it compares the current date with each customers last delivered order
+ SELECT c.customer_id,
+ c.full_name,
+ max(o.order_date) AS last_order,
+ DATEDIFF(CURDATE(), max(o.order_date)) AS day_since_last_order
+ FROM customers c
+ join orders o ON o.customer_id = c.customer_id
+ WHERE order_status = 'Delivered'
+ GROUP BY c.customer_id, c.full_name
+ Having day_since_last_order > 90
+ ORDER BY day_since_last_order;
+```
+
+
+
